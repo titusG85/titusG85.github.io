@@ -115,21 +115,19 @@ form.addEventListener("submit", function(e) {
   // Submit to Google Apps Script
   fetch(form.action, {
     method: 'POST',
+    mode: 'no-cors', // Required for Google Apps Script from external domains
     body: formData
   })
-  .then(response => {
-    if (response.ok) {
-      // Success
-      formMessage.className = "form-message success";
-      formMessage.querySelector(".form-message-text").textContent = "Thank you! Your message has been sent successfully. I'll get back to you soon!";
-      formMessage.style.display = "block";
-      form.reset();
-      
-      // Scroll to message
-      formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else {
-      throw new Error('Network response was not ok');
-    }
+  .then(() => {
+    // With no-cors mode, we can't read the response, so we assume success
+    // Google Apps Script will process the form in the background
+    formMessage.className = "form-message success";
+    formMessage.querySelector(".form-message-text").textContent = "Thank you! Your message has been sent successfully. I'll get back to you soon!";
+    formMessage.style.display = "block";
+    form.reset();
+    
+    // Scroll to message
+    formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
   })
   .catch(error => {
     // Error
