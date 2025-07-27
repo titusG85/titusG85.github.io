@@ -112,29 +112,34 @@ form.addEventListener("submit", function(e) {
   // Get form data
   const formData = new FormData(form);
   
-  // Submit to Google Apps Script with FormEasy
+  // Submit to Google Apps Script
   fetch(form.action, {
     method: 'POST',
     body: formData
   })
   .then(response => {
-    // FormEasy typically returns a redirect response
-    if (response.redirected || response.status === 200 || response.status === 302) {
+    if (response.ok) {
       // Success
       formMessage.className = "form-message success";
-      formMessage.querySelector(".form-message-text").textContent = "Thank you! Your message has been sent successfully.";
+      formMessage.querySelector(".form-message-text").textContent = "Thank you! Your message has been sent successfully. I'll get back to you soon!";
       formMessage.style.display = "block";
       form.reset();
+      
+      // Scroll to message
+      formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
-      throw new Error('Form submission failed');
+      throw new Error('Network response was not ok');
     }
   })
   .catch(error => {
     // Error
     formMessage.className = "form-message error";
-    formMessage.querySelector(".form-message-text").textContent = "Sorry, there was an error sending your message. Please try again.";
+    formMessage.querySelector(".form-message-text").textContent = "Sorry, there was an error sending your message. Please try again or email me directly at tituszach84@gmail.com";
     formMessage.style.display = "block";
     console.error('Form submission error:', error);
+    
+    // Scroll to message
+    formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
   })
   .finally(() => {
     // Reset button state
