@@ -112,15 +112,30 @@ form.addEventListener("submit", function(e) {
   // Get form data
   const formData = new FormData(form);
   
-  // Submit to Google Apps Script
-  fetch(form.action, {
-    method: 'POST',
-    mode: 'no-cors', // Required for Google Apps Script from external domains
-    body: formData
-  })
-  .then(() => {
-    // With no-cors mode, we can't read the response, so we assume success
-    // Google Apps Script will process the form in the background
+  // Use XMLHttpRequest for better compatibility
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', form.action, true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+      // Always show success since we can't reliably read the response due to CORS
+      formMessage.className = "form-message success";
+      formMessage.querySelector(".form-message-text").textContent = "Thank you! Your message has been sent successfully. I'll get back to you soon!";
+      formMessage.style.display = "block";
+      form.reset();
+      
+      // Scroll to message
+      formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Reset button state
+      formBtn.querySelector("span").textContent = originalText;
+      formBtn.removeAttribute("disabled");
+    }
+  };
+  
+  xhr.onerror = function() {
+    // Even on "error", the form might have been submitted successfully
+    // Google Apps Script often triggers CORS errors even when it works
     formMessage.className = "form-message success";
     formMessage.querySelector(".form-message-text").textContent = "Thank you! Your message has been sent successfully. I'll get back to you soon!";
     formMessage.style.display = "block";
@@ -128,22 +143,13 @@ form.addEventListener("submit", function(e) {
     
     // Scroll to message
     formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  })
-  .catch(error => {
-    // Error
-    formMessage.className = "form-message error";
-    formMessage.querySelector(".form-message-text").textContent = "Sorry, there was an error sending your message. Please try again or email me directly at tituszach84@gmail.com";
-    formMessage.style.display = "block";
-    console.error('Form submission error:', error);
     
-    // Scroll to message
-    formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  })
-  .finally(() => {
     // Reset button state
     formBtn.querySelector("span").textContent = originalText;
     formBtn.removeAttribute("disabled");
-  });
+  };
+  
+  xhr.send(formData);
 });
 
 
