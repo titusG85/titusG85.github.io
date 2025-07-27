@@ -80,6 +80,7 @@ for (let i = 0; i < filterBtn.length; i++) {
 const form = document.querySelector("[data-form]");
 const formInputs = document.querySelectorAll("[data-form-input]");
 const formBtn = document.querySelector("[data-form-btn]");
+const formMessage = document.querySelector("[data-form-message]");
 
 // add event to all form input field
 for (let i = 0; i < formInputs.length; i++) {
@@ -94,6 +95,53 @@ for (let i = 0; i < formInputs.length; i++) {
 
   });
 }
+
+// handle form submission
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+  
+  // Show loading state
+  const originalText = formBtn.querySelector("span").textContent;
+  formBtn.querySelector("span").textContent = "Sending...";
+  formBtn.setAttribute("disabled", "");
+  
+  // Hide any previous messages
+  formMessage.style.display = "none";
+  formMessage.className = "form-message";
+  
+  // Get form data
+  const formData = new FormData(form);
+  
+  // Submit to Google Apps Script with FormEasy
+  fetch(form.action, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    // FormEasy typically returns a redirect response
+    if (response.redirected || response.status === 200 || response.status === 302) {
+      // Success
+      formMessage.className = "form-message success";
+      formMessage.querySelector(".form-message-text").textContent = "Thank you! Your message has been sent successfully.";
+      formMessage.style.display = "block";
+      form.reset();
+    } else {
+      throw new Error('Form submission failed');
+    }
+  })
+  .catch(error => {
+    // Error
+    formMessage.className = "form-message error";
+    formMessage.querySelector(".form-message-text").textContent = "Sorry, there was an error sending your message. Please try again.";
+    formMessage.style.display = "block";
+    console.error('Form submission error:', error);
+  })
+  .finally(() => {
+    // Reset button state
+    formBtn.querySelector("span").textContent = originalText;
+    formBtn.removeAttribute("disabled");
+  });
+});
 
 
 

@@ -622,9 +622,9 @@
         <section class="contact-form">
           <h3 class="h3 form-title">Send Me a Message</h3>
 
-          <form action="#" class="form" data-form>
+          <form action="https://script.google.com/macros/s/AKfycbxf4qnMVHB7bogxn4uDT9IBe6fHnUiebnhRRURf6snmCi4S0omE5CKt1Yks2g5pHtuICg/exec" method="POST" class="form" data-form>
             <div class="input-wrapper">
-              <input type="text" name="fullname" class="form-input" placeholder="Your Full Name" required data-form-input />
+              <input type="text" name="name" class="form-input" placeholder="Your Full Name" required data-form-input />
 
               <input type="email" name="email" class="form-input" placeholder="Your Email Address" required
                 data-form-input />
@@ -634,11 +634,19 @@
 
             <textarea name="message" class="form-input" placeholder="Your Message" required data-form-input rows="6"></textarea>
 
+            <!-- Hidden honeypot field to prevent spam -->
+            <input type="text" name="honeypot" style="display:none" />
+
             <button class="form-btn" type="submit" data-form-btn>
               <ion-icon name="paper-plane"></ion-icon>
               <span>Send Message</span>
             </button>
           </form>
+
+          <!-- Success/Error Messages -->
+          <div class="form-message" data-form-message style="display: none;">
+            <p class="form-message-text"></p>
+          </div>
         </section>
 
         <section class="contact-info-section">
